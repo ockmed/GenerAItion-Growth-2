@@ -105,18 +105,36 @@ export default function App() {
   const handleBook = () => window.open("https://calendly.com/nextgengrowth1/30min", "_blank");
 
 
-  const handleAudit = (e) => {
-    e.preventDefault();
-    const data = new FormData(e.currentTarget);
-    const name = data.get("name");
-    const email = data.get("email");
-    const biz = data.get("business");
-    const niche = data.get("niche");
-    const body = encodeURIComponent(
-      `Hi, I'm ${name} from ${biz} (${niche}). I'd like a free AI Marketing Audit.\n\nMy goals: [increase bookings / more reviews / better social]\n\nContact me at ${email}`
-    );
-    window.location.href = `mailto:hello@yourdomain.com?subject=Free AI Marketing Audit&body=${body}`;
+  const handleAudit = async (e) => {
+  e.preventDefault();
+  const data = new FormData(e.currentTarget);
+  const payload = {
+    name: data.get("name"),
+    email: data.get("email"),
+    business: data.get("business"),
+    niche: data.get("niche"),
+    // capture the page URL for attribution
+    source: window.location.href
   };
+
+  try {
+    const res = await fetch(`https://formspree.io/f/${import.meta.env.VITE_FORMSPREE_ID}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      window.gtag && window.gtag("event", "generate_lead", { method: "formspree" });
+      alert("Thanks! We’ll reach out within 24 hours.");
+      e.currentTarget.reset();
+    } else {
+      alert("Hmm, couldn’t send. Try again or email us directly.");
+    }
+  } catch {
+    alert("Network error — please try again.");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-white">
