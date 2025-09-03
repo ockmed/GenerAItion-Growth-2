@@ -107,30 +107,30 @@ export default function App() {
 
   const handleAudit = async (e) => {
   e.preventDefault();
-  const data = new FormData(e.currentTarget);
+  const f = new FormData(e.currentTarget);
   const payload = {
-    name: data.get("name"),
-    email: data.get("email"),
-    business: data.get("business"),
-    niche: data.get("niche"),
-    // capture the page URL for attribution
-    source: window.location.href
+    name: f.get("name"),
+    email: f.get("email"),
+    business: f.get("business"),
+    niche: f.get("niche"),
+    source: window.location.href,
   };
 
   try {
-    const res = await fetch(`https://formspree.io/f/${import.meta.env.VITE_FORMSPREE_ID}`, {
+    const res = await fetch(import.meta.env.VITE_ZAPIER_HOOK_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+    // Zapier usually returns 200; we don't need the response body
     if (res.ok) {
-      window.gtag && window.gtag("event", "generate_lead", { method: "formspree" });
+      window.gtag && window.gtag("event", "generate_lead", { method: "zapier-webhook" });
       alert("Thanks! We’ll reach out within 24 hours.");
       e.currentTarget.reset();
     } else {
-      alert("Hmm, couldn’t send. Try again or email us directly.");
+      alert("Couldn’t send right now — please try again.");
     }
-  } catch {
+  } catch (err) {
     alert("Network error — please try again.");
   }
 };
