@@ -102,7 +102,8 @@ const PriceCard = ({ name, price, features, highlight }) => (
 export default function App() {
   const [brand] = useState("NextGen Growth");
 
-  const handleBook = () => window.open("https://calendly.com/", "_blank");
+  const handleBook = () => window.open("https://calendly.com/nextgengrowth1/30min", "_blank");
+
 
   const handleAudit = (e) => {
     e.preventDefault();
