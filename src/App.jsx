@@ -117,23 +117,27 @@ export default function App() {
   };
 
   try {
-    const res = await fetch(import.meta.env.VITE_ZAPIER_HOOK_URL, {
+    const res = await fetch("/api/lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    // Zapier usually returns 200; we don't need the response body
+
     if (res.ok) {
       window.gtag && window.gtag("event", "generate_lead", { method: "zapier-webhook" });
       alert("Thanks! We’ll reach out within 24 hours.");
       e.currentTarget.reset();
     } else {
+      const txt = await res.text();
+      console.error("Lead failed:", txt);
       alert("Couldn’t send right now — please try again.");
     }
   } catch (err) {
+    console.error(err);
     alert("Network error — please try again.");
   }
 };
+
 
 
   return (
